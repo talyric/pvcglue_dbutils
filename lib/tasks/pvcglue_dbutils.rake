@@ -1,7 +1,7 @@
 namespace :db do
   desc "Rebuild (drop, create, migrate) db. Then restore (or seed) and clone the test db.  Will restore db/rebuild.sql by default.  Use `rake db:rebuild[filename]` to restore db/filename.sql. Use `rake db:rebuild[-seed]` to instead load seed data."
   task :rebuild, [:filename] do |t, args|
-    raise "This task can not be run in this environment.  (Hint:  Use 'db:reload' for heroku.)" unless %w[development].include? Rails.env
+    raise "Nope...Ain't gonna do it.  Your request to drop the PRODUCTION database is denied." if Rails.env.production?
     db = Rails.configuration.database_configuration[Rails.env]
     puts "DB=#{db["database"]}"
     # if something fails and you are unable to access the db, you can drop it with the following:
@@ -16,7 +16,7 @@ namespace :db do
       module ConnectionAdapters
         class PostgreSQLAdapter < AbstractAdapter
           def drop_database(name)
-            raise "Nah, I won't drop the production database" if Rails.env.production?
+            raise "Nope...Ain't gonna do it.  Your request to drop the PRODUCTION database is denied." if Rails.env.production?
             begin
               psql_version_num = execute "select setting from pg_settings where name = 'server_version_num'"
               if psql_version_num.values.first.first.to_i < 90200
@@ -73,9 +73,9 @@ namespace :db do
 
   end
 
-  desc "Reload schema, then seed. (Does not try to drop and recreate db, which causes problems on heroku.)"
+  desc "Reload schema, then seed. (Does not try to drop and recreate db.)"
   task :reload, [:filename] => :environment do |t, args|
-    raise "This task can not be run in this environment." unless %w[development alpha beta preview].include? Rails.env
+    raise "Nope...Ain't gonna do it.  Your request to drop the PRODUCTION database is denied." if Rails.env.production?
     puts "Dropping/loading the db..."
     Rake::Task['db:schema:load'].invoke
     if args.filename == "seed!"
@@ -183,12 +183,12 @@ namespace :db do
       puts "ok, going through with the it..."
       return true
     else
-      raise "Ain't gonna do it."
+      raise "Nope...Ain't gonna do it.  Your request to drop the PRODUCTION database is denied."
     end
   end
 
   def filter_sql(sql)
-    raise "Nope..." if Rails.env.production?
+    raise "Nope...Ain't gonna do it.  Your request to drop the PRODUCTION database is denied." if Rails.env.production?
     sql = "DROP SCHEMA IF EXISTS public CASCADE;\nCREATE SCHEMA public;\n" + sql
     sql.gsub!("CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;", '')
     sql.gsub!("COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';", '')
