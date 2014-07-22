@@ -76,9 +76,9 @@ namespace :db do
   desc "Reload schema, then seed. (Does not try to drop and recreate db.)"
   task :reload, [:filename] => :environment do |t, args|
     raise "Nope...Ain't gonna do it.  Your request to drop the PRODUCTION database is denied." if Rails.env.production?
-    puts "Reloading the db..."
-    Rake::Task['db:schema:load'].invoke
     if args.filename == "seed!"
+      puts "Reloading the db..."
+      Rake::Task['db:schema:load'].invoke
       puts "Seeding the db..."
       Rake::Task['db:seed'].invoke
     else
