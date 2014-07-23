@@ -18,7 +18,15 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+TODO: Write more usage instructions here
+
+    rake db:backup[filename]                            # dump database (with schema) to *.sql using pg_dump
+    rake db:backup_data_only[filename]                  # dump database (without schema_migrations) to *.sql using pg_dump
+    rake db:info                                        # shows the current database configuration
+    rake db:rebuild[filename]                           # Rebuild (drop, create, migrate) db
+    rake db:reload[filename]                            # Reload schema, then seed
+    rake db:restore[filename]                           # restore database from sql file
+
 
 ## Contributing
 

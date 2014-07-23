@@ -153,10 +153,9 @@ namespace :db do
     end
   end
 
-  desc 'restore database from sql file. Ex: `rake db:backup[filename]` (filename is optional, default = "dump").'
-  task :info, [:filename] => :environment do |t, args|
-    db = Rails.configuration.database_configuration[Rails.env]
-    ap db
+  desc 'shows the current database configuration'
+  task :info => :environment do |t, args|
+    puts Rails.configuration.database_configuration[Rails.env].inspect
   end
 
 
