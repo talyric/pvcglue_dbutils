@@ -114,7 +114,9 @@ namespace :db do
     #cmd += " --exclude-table=cacheinators -T cacheinators_id_seq"
     cmd += " #{db["database"]} > #{path_with_default(args[:filename])}"
     puts cmd
-    unless system({"PGPASSWORD" => db["password"]}, cmd)
+    if system({"PGPASSWORD" => db["password"]}, cmd)
+      `sed -i -e 's/SET lock_timeout = 0;/--SET lock_timeout = 0;/g' db/rebuild.sql` # fix sql from 9.3 that is not compatible with 9.1
+    else
       puts "ERROR:"
       puts $?.inspect
     end
